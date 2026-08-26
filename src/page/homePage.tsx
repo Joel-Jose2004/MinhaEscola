@@ -1,30 +1,14 @@
-import { Box, Link } from "@chakra-ui/react";
-import {
-  Text,
-  Input,
-  Button,
-  InputLeftElement,
- InputGroup  
-} from '@chakra-ui/react'
-import {  useState } from "react";
+import { Box, Link, List, ListItem } from "@chakra-ui/react";
+import { Text, Input, InputLeftElement, InputGroup } from '@chakra-ui/react'
+import {  useEffect, useMemo, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import { useMedioRepository } from "../repository/useMedioRepository";
-import { useSuperiorRepository } from "../repository/useSuperiorRepository";
-import {
-  Badge,
-  Flex,
-  HStack,
-  Icon,
-  Tag,
-} from "@chakra-ui/react";
-import {
-  FiMapPin,
-  FiArrowRight,
-  FiStar,
-  FiAward,
-  FiHome,
-} from "react-icons/fi";
+import { useDataRepository } from "../repository/useDataRepository";
+import { Flex, HStack, Icon, Tag} from "@chakra-ui/react";
+import { FiMapPin, FiArrowRight, FiStar, FiHome } from "react-icons/fi";
 import { GoArrowRight } from "react-icons/go";
+import {Menu,MenuItem,MenuList, MenuButton,} from "@chakra-ui/react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+
 
 export function HomePage(){
    const [medio,setMedio]=useState(true)
@@ -32,10 +16,38 @@ export function HomePage(){
    const [search,setSearch]=useState("")
    const [searchStart,setSearchStart]=useState(false)
    const [result,setResult]=useState("")
-   const getSchool=useMedioRepository(state=>state.getSchool)
-   const listSchool=useMedioRepository(state=>state.listSchool)
-   const getUni=useSuperiorRepository(state=>state.getSchool)
-   const listUni=useSuperiorRepository(state=>state.listUni)
+   const sugestCourse=useDataRepository(state=>state.sugestCourse)
+  
+   const sugest=useDataRepository(state=>state.getCourses)
+   const getSchool=useDataRepository(state=>state.getSchool)
+   const listSchool=useDataRepository(state=>state.listSchool)
+   const getUni=useDataRepository(state=>state.getUniversity)
+   const listUni=useDataRepository(state=>state.listUni)
+   const ref = useRef<HTMLInputElement>(null);
+  const [aberto, setAberto] = useState(false);   
+  const [indice, setIndice] = useState(-1);
+
+  const resultados = useMemo(() => {
+    if (!search) return [];
+
+    return sugestCourse.filter((item) =>
+      item.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
+
+  useEffect(() => {
+    setIndice(-1);
+  }, [search]);
+
+function selecionar(valor: string) {
+    setSearch(valor);
+    setAberto(false);
+    ref.current?.focus();
+  }
+
+ useEffect(()=>{
+   sugest()
+ },[])
 
    const Superior=()=>{
     setMedio(false)
@@ -52,12 +64,42 @@ export function HomePage(){
       setSearchStart(true)
           setResult(search)
           if(medio==true){
-              getSchool(search)            
+              getSchool(search)  
+              setAberto(false)        
           }else{           
-          getUni(search)
-             
+             getUni(search)
+              setAberto(false)
           } 
    } 
+
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setAberto(true);
+        setIndice((old) =>
+          old < resultados.length - 1 ? old + 1 : old
+        );
+        break;
+
+      case "ArrowUp":
+        e.preventDefault();
+        setIndice((old) => (old > 0 ? old - 1 : 0));
+        break;
+
+      case "Enter":
+        if (indice >= 0) {
+          selecionar(resultados[indice]);
+        }
+        break;
+
+      case "Escape":
+        setAberto(false);
+        break;
+    }
+  }
+
 
   return(
      <Box 
@@ -69,8 +111,8 @@ export function HomePage(){
      alignItems={"center"}
      gap={20}>
 
-    <Box width={"50%"} gap={2}
-    boxShadow={"1px 2px 10px grey"} borderRadius={"20"}
+    <Box width={{base:"90%",md:"50%",lg:"50%"}} gap={2}
+     borderRadius={"20"}
     display={"flex"} flexDirection={"column"} alignItems={"center"}
          padding={2}>
              <Text
@@ -79,31 +121,110 @@ export function HomePage(){
                color={"green.700"}
                fontWeight={"bold"}>Minha Escola</Text>
 
-       <InputGroup maxW="600%" display={"flex"} gap={2}>
+       <InputGroup >
        
-             <InputLeftElement pointerEvents="none">
-             <CiSearch color="gray.400" />
+             <InputLeftElement >
+               <Menu>
+                   <MenuButton >
+                     <BsThreeDotsVertical />
+                   </MenuButton>
+                   <MenuList>
+                     <MenuItem  onClick={()=>Medio()}
+                      bg={medio?"green.500":"blackAlpha.200"} color={medio?"white":"black"}
+                      >Ensino Médio</MenuItem>
+                     <MenuItem onClick={()=>Superior()}
+                     bg={superior?"green.500":"blackAlpha.200"} color={superior?"white":"black"}
+                     display={"flex"} alignItems={"center"} gap={2} >Ensino Superior</MenuItem>
+                   </MenuList>
+                </Menu>
             </InputLeftElement>
-             <Input type='search'  onChange={(e)=>setSearch(e.target.value)} borderRadius={20}/>
-             <Button colorScheme="green" onClick={()=>Pesquisar()}>Pesquisar</Button>
-         
+            
+
+        <Input
+          ref={ref}
+          value={search}
+          placeholder="Coloque o nome do curso"
+          size="lg"
+          boxShadow={"0px 0px 2px 1px grey"}
+          borderRadius="999px"
+          onFocus={() => setAberto(true)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setAberto(true);
+          }}
+          onKeyDown={handleKeyDown}
+          pr="70px"
+          _focus={{
+            borderColor: "gray.300",
+            boxShadow: "0 1px 6px rgba(32,33,36,.28)",
+          }}
+          _hover={{
+            boxShadow: "0 1px 6px rgba(32,33,36,.20)",
+          }}
+        />
+             
+                     <Flex
+                       position="absolute"
+                       right="20px"
+                       h="100%"
+                       align="center"
+                       gap={3}
+                       color="gray.500"
+                       zIndex={2}
+                     >
+                       <CiSearch cursor="pointer" onClick={()=>Pesquisar()}/>
+                     </Flex>
+           
+
        </InputGroup>   
+        
+        
 
-        <Box display={"flex"} gap={2} padding={2}> 
-            <Text bg={medio?"green.500":"blackAlpha.200"} color={medio?"white":"black"} padding={1}
-            borderRadius={10} cursor={"pointer"} onClick={()=>Medio()}
-            >Ensino Médio</Text>
+ {aberto && resultados.length > 0 && (
+        <Box
+          mt={2}
+          bg="white"
+          borderRadius="25px"
+          overflow="hidden"
+          boxShadow="0 4px 12px rgba(32,33,36,.28)"
+          border="1px solid"
+          borderColor="gray.200"
+          
+          w="100%"
+          zIndex={100}
+        >
+          <List>
 
-            <Text
-            bg={superior?"green.500":"blackAlpha.200"} color={superior?"white":"black"} padding={1}
-            borderRadius={10} cursor={"pointer"} onClick={()=>Superior()}>
-            Ensino Superior</Text>
-        </Box> 
+            {resultados.map((item, index) => (
+              <ListItem
+                key={item}
+                px={6}
+                py={3}
+                cursor="pointer"
+                bg={indice === index ? "gray.100" : "white"}
+                _hover={{
+                  bg: "gray.100",
+                }}
+                onMouseEnter={() => setIndice(index)}
+                onClick={() => selecionar(item)}
+              >
+                <Flex align="center" gap={3}>
+                  <CiSearch color="gray.400" />
+                  {item}
+                </Flex>
+              </ListItem>
+            ))}
+
+          </List>
+        </Box>
+      )}
+
+         
     </Box>
 
 
       <Box display={searchStart?"flex":"none"} gap={2} 
-      width={"50%"}
+      width={"100%"} padding={5} justifyContent={"center"}
       >
           {medio==true? 
             
@@ -222,23 +343,6 @@ export function HomePage(){
        
                <Text>32k alunos</Text>
              </HStack>
-       
-             {/* Nota MEC */}
-             <Badge
-               mt={5}
-               bg="#FFF4D8"
-               color="#6F4B00"
-               px={4}
-               py={2}
-               borderRadius="full"
-               display="inline-flex"
-               alignItems="center"
-               gap={2}
-               fontSize="13px"
-             >
-               <Icon as={FiAward} />
-               Nota máxima MEC
-             </Badge>
        
              {/* Cursos */}
              <Box mt={8}>
@@ -410,23 +514,6 @@ export function HomePage(){
                <Text>32k alunos</Text>
              </HStack>
        
-             {/* Nota MEC */}
-             <Badge
-               mt={5}
-               bg="#FFF4D8"
-               color="#6F4B00"
-               px={4}
-               py={2}
-               borderRadius="full"
-               display="inline-flex"
-               alignItems="center"
-               gap={2}
-               fontSize="13px"
-             >
-               <Icon as={FiAward} />
-               Nota máxima MEC
-             </Badge>
-       
              {/* Cursos */}
              <Box mt={8}>
                <Text
@@ -487,6 +574,8 @@ export function HomePage(){
             
           ))}
       </Box>
+
+
 
 
      </Box>
