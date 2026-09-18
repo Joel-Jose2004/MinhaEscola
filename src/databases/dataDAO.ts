@@ -1,5 +1,5 @@
 import { collection,onSnapshot } from "firebase/firestore";
-import { COLLECTION_SCHOOL, COLLECTION_UNIVERSITY } from "../utils/constants";
+import { COLLECTION_SCHOOL, COLLECTION_UNIVERSITIES } from "../utils/constants";
 import { db } from "../firebase/firebaseConfig";
 import {type SchoolType } from "../Types/schoolInterface";
 import type { UniversityType } from "../Types/universityInterface";
@@ -23,7 +23,7 @@ export default class DataDAO{
     }
 
     getSuperior(callback:(data:UniversityType[])=>void){
-            const q = collection(db, COLLECTION_UNIVERSITY);
+            const q = collection(db, COLLECTION_UNIVERSITIES);
         
          onSnapshot(q, (querySnapshot) => {
     

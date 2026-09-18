@@ -1,14 +1,19 @@
-import { Box, Link, List, ListItem } from "@chakra-ui/react";
+import { Box, List, ListItem } from "@chakra-ui/react";
 import { Text, Input, InputLeftElement, InputGroup } from '@chakra-ui/react'
 import {  useEffect, useMemo, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useDataRepository } from "../repository/useDataRepository";
-import { Flex, HStack, Icon, Tag} from "@chakra-ui/react";
-import { FiMapPin, FiArrowRight, FiStar, FiHome } from "react-icons/fi";
-import { GoArrowRight } from "react-icons/go";
+import { Flex, Icon,} from "@chakra-ui/react";
 import {Menu,MenuItem,MenuList, MenuButton,} from "@chakra-ui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-
+import { FaUniversity } from 'react-icons/fa'
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import {auth} from "../firebase/firebaseAuth"
+import { ROUTE_ADMIN_PAGE, ROUTE_LOGIN_PAGE } from "../utils/constants";
+import type { userInterface } from "../Types/userType";
+import { IoIosArrowRoundForward } from "react-icons/io";
+import { Avatar } from "@chakra-ui/react";
 
 export function HomePage(){
    const [medio,setMedio]=useState(true)
@@ -16,8 +21,11 @@ export function HomePage(){
    const [search,setSearch]=useState("")
    const [searchStart,setSearchStart]=useState(false)
    const [result,setResult]=useState("")
+   const [id,setId]=useState("")
+   const [user,setUser]=useState<userInterface>()
+   const getUser=useDataRepository(state=>state.getUser)
    const sugestCourse=useDataRepository(state=>state.sugestCourse)
-  
+   const navigate=useNavigate()
    const sugest=useDataRepository(state=>state.getCourses)
    const getSchool=useDataRepository(state=>state.getSchool)
    const listSchool=useDataRepository(state=>state.listSchool)
@@ -73,6 +81,27 @@ function selecionar(valor: string) {
    } 
 
 
+   useEffect(()=>{
+      verificar()
+   },[])
+
+   const verificar=()=>{
+       
+      onAuthStateChanged(auth,(user)=>{
+         if(user?.uid){
+             setId(user?.uid)
+             const dadosRole=localStorage.getItem("MinhaEscola")
+             const dadoRole=dadosRole?.replace(/['"]+/g,'')
+             console.log(dadoRole)
+             if(dadoRole=="schoolUser"){
+               navigate(ROUTE_ADMIN_PAGE.route)
+             }
+            }else{
+              navigate(ROUTE_LOGIN_PAGE.route)
+            }
+      })
+   }
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     switch (e.key) {
       case "ArrowDown":
@@ -101,15 +130,51 @@ function selecionar(valor: string) {
   }
 
 
+  useEffect(()=>{
+    if(id){
+      getUser(id).then((res)=>{
+        setUser(res)
+      })
+    }
+},[id])
+
+const Logout=()=>{
+   const auth = getAuth();
+       signOut(auth).then(() => {
+       }).catch((error) => {
+    
+         console.error("Erro ao fazer logout:", error);});
+         localStorage.removeItem("MinhaEscola")
+         navigate(ROUTE_LOGIN_PAGE.route)
+}
+
   return(
      <Box 
      padding={1}
      height={"100vh"}
      display={"flex"} 
+     bg={"blackAlpha.200"}
      flexDirection={"column"} 
      justifyContent={searchStart?"none":"center"}
      alignItems={"center"}
      gap={20}>
+      
+      <Box position={"absolute"}
+        left={"90%"}
+        top={"5%"}>
+           <Menu>
+                   <MenuButton>
+                     <Avatar name={user?.name!}/>
+                   </MenuButton>
+                   <MenuList>
+                     <MenuItem  onClick={()=>Logout()}
+                      color={"red.300"} fontWeight={"medium"} 
+                      >Logout</MenuItem>
+                     
+                   </MenuList>
+                </Menu>
+      
+      </Box>
 
     <Box width={{base:"90%",md:"50%",lg:"50%"}} gap={2}
      borderRadius={"20"}
@@ -123,9 +188,9 @@ function selecionar(valor: string) {
 
        <InputGroup >
        
-             <InputLeftElement >
+             <InputLeftElement>
                <Menu>
-                   <MenuButton >
+                   <MenuButton>
                      <BsThreeDotsVertical />
                    </MenuButton>
                    <MenuList>
@@ -145,7 +210,8 @@ function selecionar(valor: string) {
           value={search}
           placeholder="Coloque o nome do curso"
           size="lg"
-          boxShadow={"0px 0px 2px 1px grey"}
+          bg={"white"}
+          boxShadow={"0px 0px 2px 0px grey"}
           borderRadius="999px"
           onFocus={() => setAberto(true)}
           onChange={(e) => {
@@ -243,160 +309,35 @@ function selecionar(valor: string) {
           listSchool.map((index,item)=>(
               
         <Box 
-            key={item}
-             maxW="440px"
+        key={item}
+             w="40%"
              bg="white"
-             borderRadius="28px"
-             border="1px solid"
-             borderColor="green.200"
+             borderRadius="10px"
+            
+             _hover={{
+                boxShadow:"0px 0px 3px 0px grey",
+                transition:"1s"
+             }}
              p={7}
              position="relative"
              overflow="hidden"
-             boxShadow="sm"
            >
-             {/* Círculo decorativo */}
-             <Box
-               position="absolute"
-               top="-90px"
-               right="-90px"
-               w="180px"
-               h="180px"
-               bg="green.50"
-               borderRadius="full"
-             />
-       
-             {/* Nota */}
              <Flex
-               position="absolute"
-               top={6}
-               right={6}
-               bg="gray.50"
-               px={3}
-               py={2}
-               borderRadius="16px"
-               align="center"
-               gap={2}
-               boxShadow="sm"
-             >
-               <Icon as={FiStar} color="orange.400" fill="orange" />
-               <Text fontWeight="700">4.8</Text>
-             </Flex>
-       
-             {/* Topo */}
-             <Flex align="center" gap={4}>
-               <Flex
-                 w="50px"
-                 h="50px"
-                 borderRadius="18px"
-                 bg="green.50"
-                 align="center"
-                 justify="center"
+                 flexDirection={"column"}
+                 gap={2}
                >
+                <Box display={"flex"} alignItems={"center"} gap={3}>
                  <Icon
-                   as={FiHome}
+                   as={FaUniversity}
                    color="green.600"
                    boxSize={6}
                  />
-               </Flex>
-       
-               <Tag
-                 bg="green.50"
-                 color="green.700"
-                 borderRadius="full"
-                 px={4}
-                 py={2}
-                 fontWeight="600"
-                 fontSize="11px"
-                 letterSpacing="1px"
-               >
-                 ENSINO MÉDIO
-               </Tag>
-             </Flex>
-       
-             {/* Nome */}
-             <Text
-               mt={7}
-               fontSize="30px"
-               fontWeight="700"
-               lineHeight="1.2"
-             >
-               {index.name}
-             </Text>
-       
-             {/* Informações */}
-             <HStack
-               mt={4}
-               color="gray.600"
-               spacing={3}
-               flexWrap="wrap"
-             >
-               <HStack spacing={1}>
-                 <Icon as={FiMapPin} />
-                 <Text>{index.location}</Text>
-               </HStack>
-       
-               <Text>•</Text>
-       
-               <Text>Presencial</Text>
-       
-               <Text>•</Text>
-       
-               <Text>32k alunos</Text>
-             </HStack>
-       
-             {/* Cursos */}
-             <Box mt={8}>
-               <Text
-                 fontSize="13px"
-                 color="gray.600"
-                 letterSpacing="1px"
-                 fontWeight="600"
-                 mb={3}
-               >
-                 CURSOS COMPATÍVEIS
-               </Text>
-       
-               <Tag
-                 bg="#F6F7D7"
-                 border="1px solid"
-                 borderColor="#D8D9AA"
-                 color="#333"
-                 borderRadius="12px"
-                 px={4}
-                 py={2}
-                 fontWeight="600"
-               >
-                 {result}
-               </Tag>
-             </Box>
-       
-             {/* Linha */}
-             <Box
-               h="1px"
-               bg="gray.200"
-               mt={10}
-               mb={6}
-             />
-       
-             {/* Rodapé */}
-             <Flex
-               justify="space-between"
-               align="center"
-             >
-               <Text color="gray.600">
-                 Inscrições abertas
-               </Text>
-       
-               <HStack
-                 color="green.600"
-                 fontWeight="700"
-                 cursor="pointer"
-               >
-                 <Text>Ver detalhes</Text>
-                 <Icon as={FiArrowRight} />
-               </HStack>
-             </Flex>
-           </Box>
+                 <Text color={"green.500"} fontWeight={"bold"}>{index.name}</Text>
+                 </Box>
+                 <Text>Saber Mais</Text>
+               </Flex>             
+                         
+          </Box>
           )): 
           listUni.length==0?(
             <Box  display={"flex"} width={"100%"}
@@ -414,162 +355,37 @@ function selecionar(valor: string) {
               
         <Box 
             key={item}
-             maxW="440px"
+             w="40%"
              bg="white"
-             borderRadius="28px"
-             border="1px solid"
-             borderColor="green.200"
-             p={7}
+             borderRadius="10px"
+             _hover={{
+                boxShadow:"0px 0px 3px 0px grey",
+                transition:"2s",
+                
+             }}
+             p={5}
              position="relative"
              overflow="hidden"
-             boxShadow="sm"
+             
            >
-             {/* Círculo decorativo */}
-             <Box
-               position="absolute"
-               top="-90px"
-               right="-90px"
-               w="180px"
-               h="180px"
-               bg="green.50"
-               borderRadius="full"
-             />
-       
-             {/* Nota */}
-             <Flex
-               position="absolute"
-               top={6}
-               right={6}
-               bg="gray.50"
-               px={3}
-               py={2}
-               borderRadius="16px"
-               align="center"
-               gap={2}
-               boxShadow="sm"
-             >
-               <Icon as={FiStar} color="orange.400" fill="orange" />
-               <Text fontWeight="700">4.8</Text>
-             </Flex>
-       
-             {/* Topo */}
-             <Flex align="center" gap={4}>
+             
                <Flex
-                 w="50px"
-                 h="50px"
-                 borderRadius="18px"
-                 bg="green.50"
-                 align="center"
-                 justify="center"
+                 justifyContent={"space-between"}
                >
+                <Box display={"flex"} alignItems={"center"} gap={3}>
                  <Icon
-                   as={FiHome}
+                   as={FaUniversity}
                    color="green.600"
                    boxSize={6}
                  />
+                 <Text color={"green.500"} fontWeight={"bold"}>{index.name}</Text>
+                </Box> 
+                 <Text
+                 display={"flex"} alignItems={"center"} gap={2}
+                  color={"grey"}>Mais detalhes <IoIosArrowRoundForward size={"24px"}
+                  cursor={"pointer"}/></Text>
                </Flex>
        
-               <Tag
-                 bg="green.50"
-                 color="green.700"
-                 borderRadius="full"
-                 px={4}
-                 py={2}
-                 fontWeight="600"
-                 fontSize="11px"
-                 letterSpacing="1px"
-               >
-                 ENSINO SUPERIOR
-               </Tag>
-             </Flex>
-       
-             {/* Nome */}
-             <Text
-               mt={7}
-               fontSize="30px"
-               fontWeight="700"
-               lineHeight="1.2"
-             >
-               {index.name}
-             </Text>
-       
-             {/* Informações */}
-             <HStack
-               mt={4}
-               color="gray.600"
-               spacing={3}
-               flexWrap="wrap"
-             >
-               <HStack spacing={1}>
-                 <Icon as={FiMapPin} />
-                 <Text>{index.location}</Text>
-               </HStack>
-       
-               <Text>•</Text>
-       
-               <Text>Presencial</Text>
-       
-               <Text>•</Text>
-       
-               <Text>32k alunos</Text>
-             </HStack>
-       
-             {/* Cursos */}
-             <Box mt={8}>
-               <Text
-                 fontSize="13px"
-                 color="gray.600"
-                 letterSpacing="1px"
-                 fontWeight="600"
-                 mb={3}
-               >
-                 CURSOS COMPATÍVEIS
-               </Text>
-       
-               <Tag
-                 bg="#F6F7D7"
-                 border="1px solid"
-                 borderColor="#D8D9AA"
-                 color="#333"
-                 borderRadius="12px"
-                 px={4}
-                 py={2}
-                 fontWeight="600"
-               >
-                 {result}
-               </Tag>
-             </Box>
-       
-             {/* Linha */}
-             <Box
-               h="1px"
-               bg="gray.200"
-               mt={10}
-               mb={6}
-             />
-       
-             {/* Rodapé */}
-             <Flex
-               justify="space-between"
-               align="center"
-             >
-               <Text color="gray.600" 
-               display={"flex"} 
-               alignItems={"center"}
-               gap={2}>
-                 Acesse o site <GoArrowRight/>
-               </Text>
-       
-               <HStack
-                 color="green.600"
-                 fontWeight="700"
-                 cursor="pointer"
-               >
-                <Link href={index.link} isExternal color="teal.500">{index.name}</Link>
-                 
-                 
-               </HStack>
-             </Flex>
            </Box>
             
           ))}

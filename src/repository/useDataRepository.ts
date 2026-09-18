@@ -2,16 +2,19 @@ import {create} from "zustand"
 import DataDAO from "../databases/dataDAO"
 import type { SchoolType } from "../Types/schoolInterface"
  import type { UniversityType } from "../Types/universityInterface"
+import { UserDao } from "../databases/userDao"
+import type { userInterface } from "../Types/userType"
 
 
 interface actions{
    getSchool:(search:string)=>Promise<void>
    getUniversity:(search:string)=>Promise<void>
+   getUser:(id:string)=>Promise<userInterface>
    getCourses:()=>Promise<void>
    listSchool:SchoolType[]
    listUni:UniversityType[]
    sugestCourse:string[]
-  
+   user:userInterface[]
 }
 
 
@@ -21,6 +24,7 @@ export const useDataRepository=create<actions>((set)=>({
  listSchool:[],
  listUni:[],
  sugestCourse:[],
+ user:[],
 
 getSchool:async(search):Promise<void>=>{
     
@@ -49,6 +53,10 @@ getSchool:async(search):Promise<void>=>{
     
  },
 
+  async getUser(id){
+        return await UserDao.shared.getUserById(id) 
+      
+ },
  getCourses:async():Promise<void>=>{
   var dados:string[]=[]
      DataDAO.shared.getSchool((data)=>{
