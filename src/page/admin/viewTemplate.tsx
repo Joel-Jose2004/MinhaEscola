@@ -1,5 +1,4 @@
 import { Box,Flex,Link,Text } from "@chakra-ui/react"
-import imagem from "../../assets/cemu.jfif"
 import { CiLocationOn } from "react-icons/ci"
 import { TfiEmail } from "react-icons/tfi"
 import { IoCallOutline } from "react-icons/io5"
@@ -10,13 +9,13 @@ interface props{
     institute:UniversityType
 }
 
-export function ViewTemplate({institute}:props){
+export function ViewPage({institute}:props){
 
     return(
         <>
         <Box>
 
-         <Box  backgroundImage={imagem} backgroundRepeat={"no-repeat"}
+         <Box  backgroundImage={institute.imagem} backgroundRepeat={"no-repeat"}
          backgroundSize={"cover"}
           height={"400px"}></Box> 
 

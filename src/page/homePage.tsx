@@ -10,12 +10,17 @@ import { FaUniversity } from 'react-icons/fa'
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import {auth} from "../firebase/firebaseAuth"
-import { ROUTE_ADMIN_PAGE, ROUTE_LOGIN_PAGE } from "../utils/constants";
+import { ROUTE_ADMIN_PAGE, ROUTE_LOGIN_PAGE, ROUTE_VIEW } from "../utils/constants";
 import type { userInterface } from "../Types/userType";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { Avatar } from "@chakra-ui/react";
+import type { UniversityType } from "../Types/universityInterface";
 
-export function HomePage(){
+interface props{
+  transfer:(dados:UniversityType)=>void
+}
+
+export function HomePage({transfer}:props){
    const [medio,setMedio]=useState(true)
    const [superior,setSuperior]=useState(false)
    const [search,setSearch]=useState("")
@@ -160,8 +165,8 @@ const Logout=()=>{
      gap={20}>
       
       <Box position={"absolute"}
-        left={"90%"}
-        top={"5%"}>
+        left={"84%"}
+        top={"5%"} >
            <Menu>
                    <MenuButton>
                      <Avatar name={user?.name!}/>
@@ -291,6 +296,7 @@ const Logout=()=>{
 
       <Box display={searchStart?"flex":"none"} gap={2} 
       width={"100%"} padding={5} justifyContent={"center"}
+      flexDirection={"column"} alignItems={"center"}
       >
           {medio==true? 
             
@@ -323,8 +329,7 @@ const Logout=()=>{
              overflow="hidden"
            >
              <Flex
-                 flexDirection={"column"}
-                 gap={2}
+                 justifyContent={"space-between"}
                >
                 <Box display={"flex"} alignItems={"center"} gap={3}>
                  <Icon
@@ -333,9 +338,15 @@ const Logout=()=>{
                    boxSize={6}
                  />
                  <Text color={"green.500"} fontWeight={"bold"}>{index.name}</Text>
-                 </Box>
-                 <Text>Saber Mais</Text>
-               </Flex>             
+                </Box> 
+                 <Text
+                 display={"flex"} alignItems={"center"} gap={2}
+                  color={"grey"}>Mais detalhes <IoIosArrowRoundForward size={"24px"}
+                  cursor={"pointer"} onClick={()=>(
+                    transfer(index),
+                    ROUTE_VIEW.route
+                  )}/></Text>
+              </Flex>             
                          
           </Box>
           )): 
@@ -351,6 +362,8 @@ const Logout=()=>{
               </Text>
               <Text color={"grey"}>Tente outro termo, verifique a ortografia</Text></Box>
           ):
+          
+
           listUni.map((index,item)=>(
               
         <Box 
@@ -366,7 +379,6 @@ const Logout=()=>{
              p={5}
              position="relative"
              overflow="hidden"
-             
            >
              
                <Flex
@@ -383,7 +395,11 @@ const Logout=()=>{
                  <Text
                  display={"flex"} alignItems={"center"} gap={2}
                   color={"grey"}>Mais detalhes <IoIosArrowRoundForward size={"24px"}
-                  cursor={"pointer"}/></Text>
+                  cursor={"pointer"}
+                  onClick={()=>(
+                    transfer(index),
+                    navigate(ROUTE_VIEW.route)
+                  )}/></Text>
                </Flex>
        
            </Box>

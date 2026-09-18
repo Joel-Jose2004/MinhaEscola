@@ -8,5 +8,5 @@ export const ROUTE_LOGIN_PAGE={route:"/"}
 export const ROUTE_HOME_PAGE={route:"/HomePage"}
 export const ROUTE_ADMIN_PAGE={route:"/AdminPage"}
 export const ROUTE_ADD_SCHOOL={route:"/AddSchool"}
-export const ROUTE_VIEW={route:"/ViewTemplate"}
+export const ROUTE_VIEW={route:"/ViewPage"}
 export const ROUTE_CREATE_ACCOUNT={route:"/CreateUser"}

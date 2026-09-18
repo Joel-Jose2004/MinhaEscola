@@ -1,9 +1,8 @@
-import {  Heading, Stack,  HStack, useDisclosure, Button, Flex, Box, Input, Img} from "@chakra-ui/react";
+import {  Heading, Stack,  HStack, useDisclosure, Button, Flex, Box, Input, Img, Spinner, useToast} from "@chakra-ui/react";
 import DashboardLayout from "../../layout/dashBoardLayout";
 import CardContainer from "../../components/cards/cardContainer";
 import InputField from "../../components/forms/inputField";
 import WebsiteInput from "../../components/forms/webSiteInput";
-import PrimaryButton from "../../components/buttons/primaryButton";
 import CourseInput from "../../components/forms/courseInput";
 import DynamicCourseList from "../../components/forms/dinamicCourseList";
 import { useEffect, useState } from "react";
@@ -31,6 +30,7 @@ const [webSiteName,setWebSiteName]=useState("");
 const [category,setCategory]=useState("");
 const [courses, setCourses] = useState<string[]>([]);
 const [id,setId]=useState("")
+const toast=useToast()
 const [user,setUser]=useState<userInterface>()
 const getUser=useDataRepository(state=>state.getUser)
 const navigate=useNavigate()
@@ -39,6 +39,7 @@ const [dados,setDados]=useState<instituteInterface>()
 const [getHora,setGetHora]=useState<hourInterface>()
 const [weekendHora,setWeekendHora]=useState<hourInterface>()
 const [imagem,setImagem]=useState<File>()
+const [loader, setLoader] = useState(false)
   
 
 
@@ -80,7 +81,8 @@ const uploadImage = async (file: File) => {
 };
 
 const SaveData=async()=>{
-        
+     
+    setLoader(true)
      const url = await uploadImage(imagem!);
 
     
@@ -93,7 +95,23 @@ const SaveData=async()=>{
     webSiteName,
     category,
     courses,
-    id)
+    id).then(()=>{
+        toast({
+            title:"Adicionar Instituição",
+            description:"Instituição adicionada com sucesso",
+            status:"success",
+            duration:3000
+        })
+        setLoader(false)
+    }).catch(()=>{
+           toast({
+            title:"Adicionar Instituição",
+            description:"Erro ao adicionar instituição adicionada com sucesso",
+            status:"error",
+            duration:3000
+        })
+        setLoader(false)
+    })
 }
 
 
@@ -209,9 +227,12 @@ useEffect(()=>{
                 >
                     <Button onClick={()=>AdicionarDados()}>Adicionar dados</Button>
              
-                    <PrimaryButton save={()=>SaveData()}>
-                        Salvar Escola
-                    </PrimaryButton>
+    
+                    <Button
+                    onClick={()=>SaveData()}
+                    disabled={loader?true:false}>
+                    {loader ? <Spinner />: "Salvar Escola"}    
+                    </Button>
 
                 </HStack>
 

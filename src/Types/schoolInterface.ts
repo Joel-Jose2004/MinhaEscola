@@ -1,10 +1,23 @@
 
 
 export interface SchoolInterface{
+  imagem:string,
   name:string,
   id:string,
+  link:string,
   location:string,
-  courses:[]
+  userId:string,
+  phone:String,
+  email:string,
+  saturday:{
+    fim:string,
+    inicio:string
+  }
+  mondayToFriday:{
+    fim:string,
+    inicio:string
+  }
+  courses:string[]
 }
 
 

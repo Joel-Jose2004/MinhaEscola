@@ -7,7 +7,7 @@ import { ROUTE_LOGIN_PAGE,ROUTE_HOME_PAGE,ROUTE_ADMIN_PAGE,ROUTE_ADD_SCHOOL,
 import { AdminPage } from "./page/admin/adminPage"
 import { Login } from "./page/login";
 import AddSchool from "./page/admin/addSchool";
-import { ViewTemplate } from "./page/admin/viewTemplate";
+import { ViewPage } from "./page/admin/viewTemplate";
 import { useState } from "react";
 import { CreateUser } from "./page/createAccount";
 import type { UniversityType } from "./Types/universityInterface";
@@ -28,7 +28,8 @@ const route=createBrowserRouter([
   element:<Login/>
 },{
   path:ROUTE_HOME_PAGE.route,
-  element:<HomePage/>
+  element:<HomePage
+   transfer={(dados)=>setDados(dados)}/>
 },{
   path:ROUTE_CREATE_ACCOUNT.route,
   element:<CreateUser/>
@@ -37,7 +38,7 @@ const route=createBrowserRouter([
   element:<AddSchool/>
 },{
   path:ROUTE_VIEW.route,
-  element:<ViewTemplate
+  element:<ViewPage
        institute={dados!}/>
 }
 ])
