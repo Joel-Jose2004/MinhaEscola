@@ -161,26 +161,29 @@ const Logout=()=>{
      bg={"blackAlpha.200"}
      flexDirection={"column"} 
      justifyContent={searchStart?"none":"center"}
+     alignContent={"flex-start"}
      alignItems={"center"}
      gap={20}>
       
-      <Box position={"absolute"}
-        left={"84%"}
-        top={"5%"} >
-           <Menu>
-                   <MenuButton>
-                     <Avatar name={user?.name!}/>
-                   </MenuButton>
-                   <MenuList>
-                     <MenuItem  onClick={()=>Logout()}
-                      color={"red.300"} fontWeight={"medium"} 
-                      >Logout</MenuItem>
-                     
-                   </MenuList>
-                </Menu>
+      <Box 
+       w={"100%"} display={"flex"}
+       padding={"15px"}
+       position={"absolute"}
+       top={"0%"}
+       justifyContent={"flex-end"}> 
+        <Menu>
+           <MenuButton>
+             <Avatar name={user?.name!}/>
+           </MenuButton>
+           <MenuList>
+             <MenuItem  onClick={()=>Logout()}
+              color={"red.300"} fontWeight={"medium"} 
+              >Logout</MenuItem>
+             
+           </MenuList>
+          </Menu>
+       </Box>
       
-      </Box>
-
     <Box width={{base:"90%",md:"50%",lg:"50%"}} gap={2}
      borderRadius={"20"}
     display={"flex"} flexDirection={"column"} alignItems={"center"}
@@ -315,8 +318,8 @@ const Logout=()=>{
           listSchool.map((index,item)=>(
               
         <Box 
-        key={item}
-             w="40%"
+             key={item}
+             w={{base:"100%",md:"40%",lg:"40%"}}
              bg="white"
              borderRadius="10px"
             
@@ -330,6 +333,8 @@ const Logout=()=>{
            >
              <Flex
                  justifyContent={"space-between"}
+                 flexDirection={{base:"column",md:"row",lg:"row"}}
+                 gap={{base:"3px",md:"0px",lg:"0px"}}
                >
                 <Box display={"flex"} alignItems={"center"} gap={3}>
                  <Icon
@@ -368,7 +373,7 @@ const Logout=()=>{
               
         <Box 
             key={item}
-             w="40%"
+             w={{base:"100%",md:"40%",lg:"40%"}}
              bg="white"
              borderRadius="10px"
              _hover={{
@@ -383,6 +388,8 @@ const Logout=()=>{
              
                <Flex
                  justifyContent={"space-between"}
+                 flexDirection={{base:"column",md:"row",lg:"row"}}
+                 gap={{base:"3px",md:"0px",lg:"0px"}}
                >
                 <Box display={"flex"} alignItems={"center"} gap={3}>
                  <Icon
@@ -392,6 +399,7 @@ const Logout=()=>{
                  />
                  <Text color={"green.500"} fontWeight={"bold"}>{index.name}</Text>
                 </Box> 
+
                  <Text
                  display={"flex"} alignItems={"center"} gap={2}
                   color={"grey"}>Mais detalhes <IoIosArrowRoundForward size={"24px"}
