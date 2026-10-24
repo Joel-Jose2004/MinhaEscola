@@ -280,7 +280,7 @@ const Logout=()=>{
                   bg: "gray.100",
                 }}
                 onMouseEnter={() => setIndice(index)}
-                onClick={() => selecionar(item)}
+                onClick={() => (selecionar(item),setAberto(false))}
               >
                 <Flex align="center" gap={3}>
                   <CiSearch color="gray.400" />
@@ -325,7 +325,7 @@ const Logout=()=>{
             
              _hover={{
                 boxShadow:"0px 0px 3px 0px grey",
-                transition:"1s"
+                
              }}
              p={7}
              position="relative"
@@ -378,7 +378,7 @@ const Logout=()=>{
              borderRadius="10px"
              _hover={{
                 boxShadow:"0px 0px 3px 0px grey",
-                transition:"2s",
+                
                 
              }}
              p={5}

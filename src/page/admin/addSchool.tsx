@@ -18,12 +18,13 @@ import { onAuthStateChanged } from "firebase/auth";
 import {auth} from "../../firebase/firebaseAuth"
 import { GiPhotoCamera } from "react-icons/gi";
 import {  upload } from "@vercel/blob/client";
-
+import CourseInputColor from "../../components/forms/inputFieldColor";
 
 
 
 export default function AddSchool(){
 const [course, setCourse] = useState("");
+const [colors,setColors]=useState("")
 const [courseName,setCourseName]=useState("");
 const {isOpen,onOpen,onClose}=useDisclosure()
 const [webSiteName,setWebSiteName]=useState("");
@@ -92,6 +93,7 @@ const SaveData=async()=>{
     getHora as hourInterface,
     weekendHora as hourInterface,
     courseName,
+    colors,
     webSiteName,
     category,
     courses,
@@ -178,14 +180,17 @@ useEffect(()=>{
                         label="Nome da Escola"
                         placeholder="Digite o nome"
                         value={courseName}
-                         onChange={setCourseName}                     />
-                         
+                         onChange={setCourseName} />
+
+                    <CourseInputColor value={colors} onChange={setColors}/>
 
                     <WebsiteInput 
                      value={webSiteName}
                      onChange={setWebSiteName}/>
 
                      <SelectInput value={category} onChange={setCategory}/>
+
+
 
                     <CourseInput 
                         value={course}

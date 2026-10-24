@@ -9,6 +9,7 @@ export interface SchoolInterface{
   userId:string,
   phone:String,
   email:string,
+  color:string,
   saturday:{
     fim:string,
     inicio:string
