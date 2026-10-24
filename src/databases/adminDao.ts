@@ -37,6 +37,7 @@ export class AdminDao{
     mondayToFriday:hourInterface,
      saturday:hourInterface,
      schoolName:string,
+     colors:string,
      schoolWebsite:string,
      courses:string[],userId:string){
    
@@ -48,6 +49,7 @@ export class AdminDao{
        phone:informations.phone,
        location:informations.location,
        name:schoolName,
+       color:colors,
        link:schoolWebsite,
        courses:courses,
        userId:userId
@@ -71,6 +73,7 @@ export class AdminDao{
      mondayToFriday:hourInterface,
      saturday:hourInterface,
      universityName:string,
+     colors:string,
      universityWebsite:string,
      courses:string[],userId:string){
 const dados={
@@ -81,6 +84,7 @@ const dados={
        phone:informations.phone,
        location:informations.location,
        name:universityName,
+       color:colors,
        link:universityWebsite,
        courses:courses,
        userId:userId

@@ -7,6 +7,7 @@ export interface UniversityInterface{
   location:string,
   userId:string,
   phone:String,
+  color:string,
   email:string,
   saturday:{
     fim:string,

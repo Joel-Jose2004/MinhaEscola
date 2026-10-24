@@ -14,6 +14,7 @@ interface actions{
         mondayToFriday:hourInterface,
         saturday:hourInterface,
         schoolName:string,
+        colors:string,
         schoolWebsite:string,
         category:string,
         courses:string[],
@@ -39,14 +40,15 @@ addSchool: async (
     mondayToFriday:hourInterface,
     saturday:hourInterface,
     schoolName:string,
+    colors:string,
     schoolWebsite:string,
     category:string,
     courses:string[],
     userId:string)=>{
     if(category=="medio"){
-           AdminDao.shared.addSchool(url,informations,mondayToFriday,saturday,schoolName,schoolWebsite,courses,userId)
+           AdminDao.shared.addSchool(url,informations,mondayToFriday,saturday,schoolName,colors,schoolWebsite,courses,userId)
     }else{
-          AdminDao.shared.addUniversity(url,informations,mondayToFriday,saturday,schoolName,schoolWebsite,courses,userId)
+          AdminDao.shared.addUniversity(url,informations,mondayToFriday,saturday,schoolName,colors,schoolWebsite,courses,userId)
     }
 
 },
