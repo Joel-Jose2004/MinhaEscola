@@ -41,7 +41,7 @@ export function ViewPage({institute}:props){
                     width={{base:"60%",md:"40%",lg:"20%"}}
                     display={"flex"}
                     alignItems={"center"}
-                    boxShadow={"0px 0px 2px 0px blue"}
+                    boxShadow={"0px 0px 2px 0px"+institute.color}
                     justifyContent={"center"}
                      backgroundColor={"white"}
                      height={"120px"}
@@ -57,7 +57,7 @@ export function ViewPage({institute}:props){
             </Box>
 
           
-          <Box backgroundColor={"blue"}
+          <Box backgroundColor={institute.color}
              color={"white"}
              padding={"50px"}
              display={"flex"}
@@ -168,10 +168,10 @@ export function ViewPage({institute}:props){
            <Box display={"flex"} flexDirection={"column"} gap={2}>
             
              <Text display={"flex"} alignItems={"center"} gap={2}>
-              <TfiEmail size={"20px"} color="#735c00" />{
+              <TfiEmail size={"20px"} color={institute.color} />{
               institute?.email}</Text>
              <Text display={"flex"} alignItems={"center"} gap={2}>
-              <IoCallOutline size={"20px"} color="#735c00" />{institute?.phone}</Text>
+              <IoCallOutline size={"20px"} color={institute.color}/>{institute?.phone}</Text>
            </Box>
            
         </Box>
